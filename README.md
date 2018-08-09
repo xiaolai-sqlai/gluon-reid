@@ -3,7 +3,7 @@ A code gallery for person re-identification with mxnet-gluon, and I will reprodu
 Now, I only reproduce 5 papers, and train the model on marktet1501. I will add other datasets later. 
 I will make further adjustments on these models. And before the end of August, all of these models and codes will be released. 
 
-1.Learning Compact Visual Descriptors for Low Bit Rate Mobile Landmark Search
+1.Towards Good Practices on Building Effective CNN Baseline Model for Person Re-identification
 
 result | paper  | ours
 ------------- | ------------- | -------------
