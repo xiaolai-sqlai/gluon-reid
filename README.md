@@ -6,7 +6,7 @@ I will make further adjustments on these models. And before the end of August, a
 1.Towards Good Practices on Building Effective CNN Baseline Model for Person Re-identification
 
 result | paper  | ours
-------------- | ------------- | -------------
+--- | --- | ---
 rank1  | 91.7 | 91.5
 mAP  | 78.8 | 76.8
 
@@ -16,8 +16,9 @@ mAP  | 78.8 | 76.8
  
 3.Beyond Part Models: Person Retrieval with Refined Part Pooling
  
-result | paper  | ours
-------------- | ------------- | -------------
+
+pcb-1536 | paper  | ours
+--- | --- | ---
 rank1  | 92.4 | 93.1
 mAP  | 77.3 | 78.2
 
@@ -25,7 +26,7 @@ mAP  | 77.3 | 78.2
 4.Learning Discriminative Features with Multiple Granularity for Person Re-Identification
 
 result | paper  | ours
-------------- | ------------- | -------------
+--- | --- | ---
 rank1  | 95.7 | 95.2
 mAP  | 86.9 | 86.1
  
@@ -33,6 +34,6 @@ mAP  | 86.9 | 86.1
 5.SphereReID: Deep Hypersphere Manifold Embedding for Person Re-Identification(coming soon)
 
 result | paper  | ours
-------------- | ------------- | -------------
+--- | --- | ---
 rank1  | 94.4 | 93.5
 mAP  | 83.6 | 81.3
