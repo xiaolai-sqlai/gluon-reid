@@ -22,15 +22,15 @@ parser.add_argument('--train-data', type=str, default='txt/train.txt',
                     help='training record file to use, required for imagenet.')
 parser.add_argument('--val-data', type=str, default='txt/val.txt',
                     help='validation record file to use, required for imagenet.')
-parser.add_argument('--img-height', type=int, default=384,
+parser.add_argument('--img-height', type=int, default=256,
                     help='the height of image for input')
 parser.add_argument('--img-width', type=int, default=128,
                     help='the width of image for input')
-parser.add_argument('--batch-size', type=int, default=32,
+parser.add_argument('--batch-size', type=int, default=8,
                     help='training batch size per device (CPU/GPU).')
-parser.add_argument('--num-workers', type=int, default=8,
+parser.add_argument('--num-workers', type=int, default=32,
                     help='the number of workers for data loader')
-parser.add_argument('--num-gpus', type=int, default=1,
+parser.add_argument('--num-gpus', type=int, default=4,
                     help='number of gpus to use.')
 parser.add_argument('--warmup', type=bool, default=True,
                     help='number of training epochs.')
@@ -49,6 +49,30 @@ parser.add_argument('--data-dir', default='../dataset/market1501/train', type=st
 parser.add_argument('--lr-decay', type=int, default=0.1)
 parser.add_argument('--hybridize', type=bool, default=True)
 
+
+def concat_and_load(data, use_cpu=True, gpu_id=0):
+    """Splits an NDArray into `len(ctx_list)` slices along `batch_axis` and loads
+    each slice to one context in `ctx_list`.
+    Parameters
+    ----------
+    data : NDArray
+        A batch of data in different gpu.
+    use_cpu : bool, default True
+        Use cpu or gpu.
+    gpu_id : int, default 0
+        Which gpu to use.
+    Returns
+    -------
+    NDArray
+        All data in one device.
+    """
+    if isinstance(data, list):
+        if use_cpu:
+            ctx = mx.cpu()
+        else:
+            ctx = mx.gpu(gpu_id)
+        data = [x.as_in_context(ctx) for x in data]
+        return nd.concatenate(data)
 
 
 def get_data_iters(batch_size):
@@ -80,20 +104,20 @@ def get_data_iters(batch_size):
 
 
 def validate(val_data, net, criterion, ctx):
-    loss = 0.0
+    _loss = 0.0
     for data, label in val_data:
         data_list = gluon.utils.split_and_load(data, ctx)
         label_list = gluon.utils.split_and_load(label, ctx)
 
         with autograd.predict_mode():
-            outpus = [net(X) for X in data_list]
-            losses = [criterion(X, y) for X, y in zip(outpus, label_list)]
-        accuray = [nd.mean(X.argmax(axis=1)==y.astype('float32')).asscalar() for X, y in zip(outpus, label_list)]
+            outputs = concat_and_load([net(X) for X in data_list])
+            labels = concat_and_load(label_list)
+            loss = criterion(outputs, labels)
+        accuray = nd.mean(outputs.argmax(axis=1)==labels.astype('float32')).asscalar()
 
-        loss_list = [l.mean().asscalar() for l in losses]
-        loss += sum(loss_list) / len(loss_list)
+        _loss += loss.mean().asscalar()
 
-    return loss/len(val_data), sum(accuray)/len(accuray)
+    return _loss/len(val_data), sum(accuray)/len(accuray)
 
 
 def main(net, batch_size, epochs, opt, ctx):
@@ -125,16 +149,15 @@ def main(net, batch_size, epochs, opt, ctx):
             data_list = gluon.utils.split_and_load(data, ctx)
             label_list = gluon.utils.split_and_load(label, ctx)
             with autograd.record():
-                outpus = [net(X) for X in data_list]
-                losses = [criterion(X, y) for X, y in zip(outpus, label_list)]
-            # accuray = [nd.mean(X.argmax(axis=1)==y.astype('float32')).asscalar() for X, y in zip(outpus, label_list)]
-
-            for l in losses:
-                l.backward()
+                outputs = concat_and_load([net(X) for X in data_list])
+                labels = concat_and_load(label_list)
+                loss = criterion(outputs, labels)
+            
+            loss.backward()
             trainer.step(batch_size)
-            _loss_list = [l.mean().asscalar() for l in losses]
-            # print(_loss_list, accuray)
-            _loss += sum(_loss_list) / len(_loss_list)
+            _loss += loss.mean().asscalar()
+            # accuray = nd.mean(outputs.argmax(axis=1)==labels.astype('float32')).asscalar()
+            # print(_loss, accuray)
 
         cur_time = datetime.datetime.now()
         h, remainder = divmod((cur_time - prev_time).seconds, 3600)

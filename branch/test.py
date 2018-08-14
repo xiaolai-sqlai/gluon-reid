@@ -52,7 +52,7 @@ def extract_feature(model, dataloaders, ctx):
         for i in range(2):
             if(i==1):
                 img = fliplr(img)
-            f = nd.concatenate(model(img.as_in_context(ctx)), axis=1).as_in_context(mx.cpu()).asnumpy()
+            f = nd.concatenate(model(img.as_in_context(ctx)[0]), axis=1).as_in_context(mx.cpu()).asnumpy()
             ff = ff+f
         features.append(ff)
     features = np.concatenate(features)

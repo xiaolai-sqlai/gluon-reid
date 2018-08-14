@@ -14,31 +14,18 @@ class ResNet(HybridBlock):
         152: vision.resnet152_v1,
     }
 
-    def __init__(self, depth, ctx, pretrained=True, num_features=0, num_classes=0):
+    def __init__(self, depth, ctx, pretrained=True, num_classes=0):
         super(ResNet, self).__init__()
-        self.num_classes = num_classes
+        self.pretrained = pretrained
 
         with self.name_scope():
-            model = ResNet.__factory[depth](pretrained=pretrained, ctx=ctx).features
-            model[-2][0].body[0]._kwargs['stride'] = (1, 1)
-            model[-2][0].downsample[0]._kwargs['stride'] = (1, 1)
-
-            self.base = nn.HybridSequential()
-            for layer in model[:5]:
-                self.base.add(layer)
-            self.base.collect_params().setattr('grad_req', 'null')
-            
-            self.feat = nn.HybridSequential()
-            for layer in model[5:]:
-                self.feat.add(layer)
-
-            embed = nn.Dense(num_features, use_bias=False)
-            embed.initialize(init=init.Xavier(), ctx=ctx)
-            self.feat.add(embed)
-
-            bn = nn.BatchNorm(center=False, scale=False)
+            self.base = ResNet.__factory[depth](pretrained=pretrained, ctx=ctx).features
+            self.base[-2][0].body[0]._kwargs['stride'] = (1, 1)
+            self.base[-2][0].downsample[0]._kwargs['stride'] = (1, 1)
+            self.base.add(nn.Flatten())
+            bn = nn.BatchNorm(center=False, scale=True)
             bn.initialize(init=init.Zero(), ctx=ctx)
-            self.feat.add(bn)
+            self.base.add(bn)
 
             self.classifier = nn.Dense(num_classes, use_bias=False)
             self.classifier.initialize(init=init.Normal(0.001), ctx=ctx)
@@ -46,8 +33,7 @@ class ResNet(HybridBlock):
 
     def hybrid_forward(self, F, x):
         x = self.base(x)
-        x = self.feat(x)
-        if self.num_classes > 0:
+        if self.pretrained:
             x = self.classifier(x)
         return x
 

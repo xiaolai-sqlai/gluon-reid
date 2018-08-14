@@ -1,14 +1,14 @@
 # gluon-reid
 A code gallery for person re-identification with mxnet-gluon, and I will reproduce many STOA algorithm.
 Now, I only reproduce 5 papers, and train the model on marktet1501. I will add other datasets later. 
-I will make further adjustments on these models. And before the end of August, all of these models and codes will be released. 
+I also will make further adjustments on these models. Before the end of August, all of these models and codes will be released. 
 
 1.Towards Good Practices on Building Effective CNN Baseline Model for Person Re-identification
 
 result | paper  | ours
 --- | --- | ---
-rank1  | 91.7 | 91.5
-mAP  | 78.8 | 76.8
+rank1  | 91.7 | 93.1
+mAP  | 78.8 | 80.3
 
 
 2.In Defense of the Triplet Loss for Person Re-Identification(coming soon)

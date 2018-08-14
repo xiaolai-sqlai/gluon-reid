@@ -7,7 +7,7 @@ from mxnet import gluon, image, nd
 from mxnet.gluon import nn
 from mxnet.gluon.data.vision import transforms
 
-from networks import resnet18
+from networks import resnet18, resnet34, resnet50
 from data_read import ImageTxtDataset
 
 import time, os, sys
@@ -18,7 +18,7 @@ def get_data(batch_size, test_set, query_set):
     normalizer = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     transform_test = transforms.Compose([
-        transforms.Resize(size=(128, 256), interpolation=1),
+        transforms.Resize(size=(128, 384), interpolation=1),
         transforms.ToTensor(),
         normalizer])
 
@@ -31,7 +31,7 @@ def get_data(batch_size, test_set, query_set):
 
 
 def load_network(network, ctx):
-    network.load_params('params/resnet18.params', ctx=ctx, allow_missing=True, ignore_extra=True)
+    network.load_parameters('params/resnet50.params', ctx=ctx, allow_missing=True, ignore_extra=True)
     return network
 
 
@@ -48,7 +48,7 @@ def extract_feature(model, dataloaders, ctx):
         n = img.shape[0]
         count += n
         print(count)
-        ff = np.zeros((n, 256))
+        ff = np.zeros((n, 2048))
         for i in range(2):
             if(i==1):
                 img = fliplr(img)
@@ -70,7 +70,7 @@ def get_id(img_path):
 
 if __name__ == '__main__':
     batch_size = 256
-    data_dir = '../../dataset/market1501/'
+    data_dir = '../dataset/market1501/'
     gpu_ids = [0]
 
     # set gpu ids
@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     ######################################################################
     # Load Collected data Trained model
-    model_structure = resnet18(ctx=context, pretrained=False, num_features=256)
+    model_structure = resnet50(ctx=context, pretrained=False)
     model = load_network(model_structure, context)
 
     # Extract feature

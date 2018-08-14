@@ -70,7 +70,7 @@ for i in range(len(query_label)):
         continue
     CMC = CMC + CMC_tmp
     ap += ap_tmp
-    print('Res:%d %d, Top1:%f mAP:%f'%(i,CMC_tmp[0],CMC[0]/i,ap/i))
+    print('Res:%d %d'%(i,CMC_tmp[0]))
 
 CMC = CMC/len(query_label) #average CMC
 print('top1:%f top5:%f top10:%f mAP:%f'%(CMC[0],CMC[4],CMC[9],ap/len(query_label)))
