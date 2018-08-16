@@ -7,4 +7,4 @@ paper w/o triplet | 95.3 | 97.9 | 98.7 | 86.2
 paper | 95.7 | 98.3 | 99.0 | 86.9
 our w/o triplet(batchnorm) | 95.0 | 98.0 | 98.9 | 85.2  
 our w/o triplet(batchnorm w/o bias) 95.8 | 98.1 | 98.8 |85.7
-our | | | |
+our | 94.8 | 97.9 | 98.9 | 85.0

@@ -31,7 +31,7 @@ def get_data(batch_size, test_set, query_set):
 
 
 def load_network(network, ctx):
-    network.load_params('params/resnet50.params', ctx=ctx, allow_missing=True, ignore_extra=True)
+    network.load_parameters('params/resnet50.params', ctx=ctx, allow_missing=True, ignore_extra=True)
     return network
 
 

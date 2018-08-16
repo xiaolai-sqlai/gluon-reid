@@ -1,6 +1,6 @@
 from __future__ import division
 
-import argparse, datetime
+import argparse, datetime, os
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -174,6 +174,8 @@ def main(net, batch_size, epochs, opt, ctx):
         prev_time = cur_time
         print(epoch_str + time_str + ', lr ' + str(trainer.learning_rate))
 
+    if not os.path.exists("params"):
+        os.mkdir("params")
     net.save_parameters("params/resnet50.params")
 
 
