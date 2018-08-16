@@ -31,10 +31,10 @@ parser.add_argument('--num-workers', type=int, default=36,
                     help='the number of workers for data loader')
 parser.add_argument('--num-gpus', type=int, default=4,
                     help='number of gpus to use.')
-parser.add_argument('--triplet', type=bool, default=True,
+parser.add_argument('--triplet', type=bool, default=False,
                     help='number of gpus to use.')
 parser.add_argument('--epochs', type=str, default="20,110,140,160")
-parser.add_argument('--lr', type=float, default=2e-4,
+parser.add_argument('--lr', type=float, default=1e-1,
                     help='learning rate. default is 1e-1.')
 parser.add_argument('-momentum', type=float, default=0.9,
                     help='momentum value for optimizer, default is 0.9.')
@@ -108,8 +108,8 @@ def main(net, batch_size, epochs, opt, ctx):
     if opt.hybridize:
         net.hybridize()
 
-    #trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': opt.lr, 'wd': opt.wd, 'momentum': opt.momentum})
-    trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': opt.lr, 'wd': opt.wd})
+    trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': opt.lr, 'wd': opt.wd, 'momentum': opt.momentum})
+    #trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': opt.lr, 'wd': opt.wd})
     criterion1 = []
     for _ in range(8):
         criterion1.append(gluon.loss.SoftmaxCrossEntropyLoss())

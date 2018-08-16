@@ -106,7 +106,7 @@ class ResNet(HybridBlock):
                 feat = nn.Conv2D(channels=num_features, kernel_size=1, use_bias=False)
                 feat.initialize(init=init.MSRAPrelu('in', 0), ctx=ctx)
                 tmp.add(feat)
-                bn = nn.BatchNorm(center=False, scale=False)
+                bn = nn.BatchNorm(center=False, scale=True)
                 bn.initialize(init=init.Zero(), ctx=ctx)
                 tmp.add(bn)
                 tmp.add(nn.Flatten())

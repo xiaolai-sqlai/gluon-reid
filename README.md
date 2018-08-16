@@ -27,8 +27,8 @@ mAP  | 77.3 | 78.2
 
 result | paper  | ours
 --- | --- | ---
-rank1  | 95.7 | 95.2
-mAP  | 86.9 | 86.1
+rank1  | 95.7 | 95.8
+mAP  | 86.9 | 85.7
  
 
 5.SphereReID: Deep Hypersphere Manifold Embedding for Person Re-Identification(coming soon)
